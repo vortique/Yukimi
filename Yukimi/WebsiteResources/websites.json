@@ -1,0 +1,12 @@
+{
+  "websites": {
+    "mangadex.org": {
+      "website_url": "https://mangadex.org",
+      "icon": "pack://application:,,,/Resources/WebsiteIcons/mangadex-logo.svg",
+      "api": {
+        "base_url": "https://api.mangadex.org",
+        "search_endpoint": "/manga"
+      }
+    }
+  }
+}

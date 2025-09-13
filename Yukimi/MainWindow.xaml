@@ -1,0 +1,155 @@
+﻿<Window x:Class="Yukimi.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:local="clr-namespace:Yukimi"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        Title="Yukimi" Height="720" Width="1280">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="6*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0" Grid.Column="0"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1">
+            <StackPanel Margin="10 0 0 0" Orientation="Horizontal">
+                <Image Width="64"
+                       Stretch="Uniform"
+                       Margin="0 0 0 8"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       Source="/Resources/Logo/applogo.png" />
+
+                <TextBlock VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="5 0 0 0"
+                           FontSize="36"
+                           FontWeight="Bold"
+                           FontFamily="Comic Sans MS"
+                           Text="YUKIMI">
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,1,0">
+            <StackPanel Margin="0 15 0 0">
+                <TreeView BorderThickness="0">
+                    <TreeView.Resources>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="Foreground" Value="#363636"/>
+                            <Setter Property="FontSize" Value="16" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </TreeView.Resources>
+
+                    <!-- Search -->
+                    <TreeViewItem IsExpanded="True">
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Search16" Margin="0 0 5 0" />
+                                <TextBlock Text="Search"/>
+                            </StackPanel>
+                        </TreeViewItem.Header>
+
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Book20" Margin="0 0 5 0" />
+                                    <TextBlock Text="Book" FontSize="12"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Pen16" Margin="0 0 5 0" />
+                                    <TextBlock Text="Mangaka" FontSize="12"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="VirtualNetwork20" Margin="0 0 5 0" />
+                                    <TextBlock Text="Website" FontSize="12"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+                    </TreeViewItem>
+
+                    <!-- You -->
+                    <TreeViewItem IsExpanded="True">
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Person16" Margin="0 0 5 0" />
+                                <TextBlock Text="You"/>
+                            </StackPanel>
+                        </TreeViewItem.Header>
+
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Settings16" Margin="0 0 5 0" />
+                                    <TextBlock Text="Profile Settings" FontSize="12"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Clock16" Margin="0 0 5 0" />
+                                    <TextBlock Text="History" FontSize="12"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+
+                        <TreeViewItem>
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Heart16" Margin="0 0 5 0" />
+                                    <TextBlock Text="Favorites" FontSize="12"/>
+                                </StackPanel>
+                            </TreeViewItem.Header>
+                        </TreeViewItem>
+                    </TreeViewItem>
+                </TreeView>
+
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="0" Grid.Column="1"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal"
+                        Margin="20 0 0 0">
+                <Button Height="40" Width="40"
+                        Style="{StaticResource RoundedButton}"
+                        Background="#E0E0E0"
+                        FontWeight="Bold"
+                        BorderBrush="White"
+                        FontSize="16">
+                    <ui:SymbolIcon Symbol="Search12" />
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1">
+            <ContentControl Content="{Binding CurrentView}" />
+        </Border>
+    </Grid>
+</Window>
