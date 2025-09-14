@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Yukimi.Views.WelcomePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Yukimi.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             Background="{DynamicResource MaterialDesignPaper}"
+             FontFamily="{DynamicResource MaterialDesignFont}">
+    <UserControl.DataContext>
+        <vm:WelcomePageViewModel />
+    </UserControl.DataContext>
+
+    <StackPanel Orientation="Vertical"
+                VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Welcome To The " FontFamily="Arial Black"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="Yukimi" FontFamily="Comic Sans MS"
+                       FontSize="24"
+                       Foreground="#ffe9f8"
+                       Margin="5 0 0 10" />
+        </StackPanel>
+
+        <Button Content="Go To Your Feed"
+                Style="{StaticResource MaterialDesignPaperDarkButton}"
+                Command="{Binding }" />
+    </StackPanel>
+</UserControl>

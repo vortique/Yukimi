@@ -3,11 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-        xmlns:local="clr-namespace:Yukimi"
+        xmlns:vm="clr-namespace:Yukimi.ViewModels"
+        xmlns:views="clr-namespace:Yukimi.Views"
         mc:Ignorable="d"
         WindowStyle="None"
-        Title="Yukimi" Height="720" Width="1280">
+        Title="Yukimi" Height="720" Width="1280"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding ExitCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
 
         <Grid.RowDefinitions>
@@ -21,36 +39,29 @@
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" Grid.Column="0"
-                BorderBrush="#E0E0E0"
                 BorderThickness="0,0,0,1">
-            <StackPanel Margin="10 0 0 0" Orientation="Horizontal">
-                <Image Width="64"
-                       Stretch="Uniform"
-                       Margin="0 0 0 8"
-                       RenderOptions.BitmapScalingMode="HighQuality"
-                       Source="/Resources/Logo/applogo.png" />
-
-                <TextBlock VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Margin="5 0 0 0"
-                           FontSize="36"
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <TextBlock FontSize="36"
                            FontWeight="Bold"
                            FontFamily="Comic Sans MS"
-                           Text="YUKIMI">
+                           Foreground="#ffe9f8"
+                           Text="YUKIMI"
+                           Margin="24 0 0 0">
                 </TextBlock>
             </StackPanel>
         </Border>
 
         <Border Grid.Row="1" Grid.Column="0"
-                BorderBrush="#E0E0E0"
                 BorderThickness="0,0,1,0">
             <StackPanel Margin="0 15 0 0">
                 <TreeView BorderThickness="0">
                     <TreeView.Resources>
                         <Style TargetType="TreeViewItem">
-                            <Setter Property="Foreground" Value="#363636"/>
                             <Setter Property="FontSize" Value="16" />
                             <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Dark.Foreground}" />
+                            <Setter Property="Margin" Value="0 0 0 3" />
                         </Style>
                     </TreeView.Resources>
 
@@ -133,17 +144,15 @@
         </Border>
 
         <Border Grid.Row="0" Grid.Column="1"
-                BorderBrush="#E0E0E0"
                 BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal"
-                        Margin="20 0 0 0">
+                        FlowDirection="RightToLeft">
                 <Button Height="40" Width="40"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#E0E0E0"
+                        Style="{StaticResource MaterialDesignFloatingActionDarkButton}"
                         FontWeight="Bold"
-                        BorderBrush="White"
-                        FontSize="16">
-                    <ui:SymbolIcon Symbol="Search12" />
+                        FontSize="16"
+                        Margin="30 0 0 0">
+                    <ui:SymbolIcon Symbol="Search16" />
                 </Button>
             </StackPanel>
         </Border>

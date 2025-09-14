@@ -36,7 +36,5 @@ namespace Yukimi
             [JsonPropertyName("mangadex.org")]
             public MangadexOrg mangadexorg { get; set; }
         }
-
-
     }
 }

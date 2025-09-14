@@ -2,16 +2,19 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.IO;
 
 namespace Yukimi
 {
-    public static class MangaDex
+    public class MangaDex : IWebsiteService
     {
-        public static async Task<string> Search(string query)
+        public async Task<string> Search(string query)
         {
             using (HttpClient httpClient = new HttpClient())
             {
-                var root = JSONHelper.DeserializeFromFile<WebsitesJSONModel.Root>("pack://application:,,,/WebsiteResources/websites.json");
+                string path = Path.Combine(AppContext.BaseDirectory, "Models/StorageModels/ExampleUserProfile.json");
+
+                var root = JSONHelper.DeserializeFromFile<WebsitesJSONModel.Root>(path);
 
                 string url = root.websites.mangadexorg.api.base_url
                     + root.websites.mangadexorg.api.search_endpoint;

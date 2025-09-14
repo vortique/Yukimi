@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Windows;
 
 namespace Yukimi
 {
@@ -34,6 +35,13 @@ namespace Yukimi
             {
                 sw.WriteLine(jsonContent);
             }
+        }
+
+        public static void SerializeJSONAndSaveToFile(object obj, string path, bool indented = false)
+        {
+            var jsonContent = Serialize(obj, indented);
+
+            SaveSerializedJSONToFile(jsonContent, path);
         }
     }
 }
