@@ -9,4 +9,4 @@ A MMMN(**manga**/**manhwa**/**manhua**/**novel**) reader with multi-site support
 - [ ] **???**
 
 ## License
-This project including every sub-project is licensed under [GPL v3.0](LICENSE.txt) for the sustainability of open source. Because we love open source.
+This project is licensed under [GPL v3.0](LICENSE.txt) for the sustainability of open source. Because we love open source.
