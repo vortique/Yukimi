@@ -6,6 +6,34 @@
   --hover-color: #2c2d33;
   --border-color: #373a40;
   --font-family: "Outfit", sans-serif;
+  --title-gradient: linear-gradient(45deg, #fff, #a5a5a5);
+}
+
+[data-theme="light"] {
+  --bg-color: #f8f9fa;
+  --sidebar-bg: #ffffff;
+  --text-color: #212529;
+  --accent-color: #7950f2;
+  --hover-color: #e9ecef;
+  --border-color: #dee2e6;
+  --title-gradient: linear-gradient(45deg, #1a1b1e, #495057);
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--hover-color);
 }
 
 * {
@@ -44,7 +72,7 @@ body {
 .app-title h1 {
   font-size: 24px;
   font-weight: 700;
-  background: linear-gradient(45deg, #fff, #a5a5a5);
+  background: var(--title-gradient);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
