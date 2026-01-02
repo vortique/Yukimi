@@ -1,0 +1,29 @@
+{
+  "name": "yukimi",
+  "version": "0.0.1",
+  "description": "MMMN(**manga**/**manhwa**/**manhua**/**novel**) reader with multi-site support and fast reading experience for computers.",
+  "main": "src/main/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vortique/Yukimi.git"
+  },
+  "keywords": [],
+  "author": "Vortique",
+  "license": "GPL-3.0",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vortique/Yukimi/issues"
+  },
+  "homepage": "https://github.com/vortique/Yukimi#readme",
+  "devDependencies": {
+    "electron": "^39.2.7",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "axios": "^1.13.2"
+  }
+}
