@@ -1,3 +1,5 @@
+const axios = require("axios");
+const fs = require("fs/promises");
 const io = require("../utils/io");
 const logger = require("../utils/logger");
 
@@ -7,11 +9,18 @@ async function cache(path, key, jsonContent, ttl) {
       path,
       JSON.stringify({ [key]: jsonContent, time: Date.now() + ttl })
     );
-    return jsonContent
+    return jsonContent;
   } catch (e) {
     return { success: false, message: e.message };
   }
 }
+
+// TODO
+// async function cacheImage(path, ttl) {
+//   try {
+//     if ()
+//   }
+// }
 
 async function getCachedData(path, key) {
   try {

@@ -1,6 +1,6 @@
 const { app } = require("electron");
 const path = require("path");
-const { appendFile } = require("./io");
+const fs = require("fs/promises");
 
 const logPath = path.join(app.getPath("userData"));
 
@@ -36,7 +36,7 @@ async function write(level, ...args) {
   const line = `[${new Date().toISOString()}] [${level}] ${msg}\n`;
 
   try {
-    await appendFile(file, line);
+    await fs.appendFile(file, line, { encoding: "utf-8" });
   } catch (e) {
     console.log("[logger.js/write] Can not access log file.");
     console.error(e);

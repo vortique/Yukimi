@@ -1,4 +1,5 @@
-const fs = require("fs/promises");
+const crypto = require("crypto");
+const fs = require("fs");
 const logger = require("./logger");
 
 async function readFile(path) {
@@ -51,6 +52,16 @@ async function pathExists(path) {
     logger.error(`[io.js/pathExists] ${e.message}`);
     throw e;
   }
+}
+
+async function getHash(path) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash("sha256");
+    const rs = fs.createReadStream(path);
+    rs.on("error", reject);
+    rs.on("data", (chunk) => hash.update(chunk));
+    rs.on("end", () => resolve(hash.digest("hex")));
+  });
 }
 
 module.exports = {

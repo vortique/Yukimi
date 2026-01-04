@@ -99,7 +99,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } catch (error) {
       console.error("Failed to load providers:", error);
-      sourcesContainer.innerHTML = `<p class="error">Error loading providers: ${error.message}</p>`;
+      sourcesContainer.innerHTML = `
+        <div class="error-container" style="text-align: center; padding: 20px;">
+          <p class="error">Failed to load providers: ${error.message}</p>
+          <button id="retry-providers" class="primary-button" style="margin-top: 10px;">Retry</button>
+        </div>
+      `;
+      document
+        .getElementById("retry-providers")
+        .addEventListener("click", loadProviders);
     }
   }
 
@@ -117,67 +125,140 @@ document.addEventListener("DOMContentLoaded", () => {
         <input type="text" placeholder="Enter a title... Example: Solo Leveling" id="provider-search-input">
         <button class="primary-button">Search</button>
       </div>
+      <div class="search-results"></div>
+      <div class="loading-indicator" style="display: none; text-align: center; color: var(--text-color); padding: 20px;">Loading more...</div>
     `;
 
     sourcesContainer.appendChild(searchArea);
 
-    // Back button logic
-    searchArea.querySelector(".back-button").addEventListener("click", () => {
-      loadProviders();
-    });
-
-    // Search button logic
-    const searchBtn = searchArea.querySelector(".primary-button");
     const searchInput = document.getElementById("provider-search-input");
+    const searchBtn = searchArea.querySelector(".primary-button");
+    const resultsContainer = searchArea.querySelector(".search-results");
+    const loadingIndicator = searchArea.querySelector(".loading-indicator");
 
-    const handleSearch = async () => {
-      const query = searchInput.value;
-      if (!query.trim()) return;
+    let offset = 0;
+    let isLoading = false;
+    let currentQuery = "";
+    let hasMore = true;
+    let observer;
 
-      const resultsContainer = document.createElement("div");
-      resultsContainer.className = "search-results";
-      resultsContainer.innerHTML = "<h4>Searching...</h4>";
+    const fetchResults = async (isNewSearch = false) => {
+      if (isLoading) return;
+      if (!isNewSearch && !hasMore) return;
 
-      // Remove existing results if any
-      const existingResults = searchArea.querySelector(".search-results");
-      if (existingResults) existingResults.remove();
-
-      searchArea.appendChild(resultsContainer);
+      isLoading = true;
+      if (isNewSearch) {
+        resultsContainer.innerHTML = "<h4>Searching...</h4>";
+        loadingIndicator.style.display = "none";
+        offset = 0;
+        hasMore = true;
+      } else {
+        loadingIndicator.style.display = "block";
+      }
 
       try {
         const result = await window.yukimi.searchInProvider(
           providerName,
-          query
+          currentQuery,
+          offset
         );
 
+        if (isNewSearch) resultsContainer.innerHTML = "";
+
         if (result.success) {
-          renderSearchResults(result.content, resultsContainer);
+          const items = result.content;
+          if (items.length > 0) {
+            renderSearchResults(items, resultsContainer);
+            offset += 20;
+            if (items.length < 20) hasMore = false;
+          } else {
+            if (isNewSearch)
+              resultsContainer.innerHTML = "<p>No results found.</p>";
+            hasMore = false;
+          }
         } else {
-          resultsContainer.innerHTML = `<p class="error">Error: ${result.message}</p>`;
+          if (isNewSearch)
+            resultsContainer.innerHTML = `<p class="error">Error: ${result.message}</p>`;
         }
       } catch (err) {
-        console.error(err);
-        resultsContainer.innerHTML = `<p class="error">Search failed.</p>`;
+        console.error("Search error:", err);
+        const errorMessage = err.message || "Unknown error occurred";
+
+        if (isNewSearch) {
+          if (errorMessage.includes("Provider not found")) {
+            resultsContainer.innerHTML = `<div class="error-message">
+              <p>Error: The provider '<strong>${providerName}</strong>' is not available.</p>
+              <button onclick="location.reload()" class="retry-button">Reload App</button>
+            </div>`;
+          } else {
+            resultsContainer.innerHTML = `<p class="error">Search failed: ${errorMessage}</p>`;
+          }
+        } else {
+          hasMore = false;
+          loadingIndicator.innerHTML = `<span style="color: coral;">Failed to load more results.</span>`;
+        }
+      } finally {
+        isLoading = false;
+        if (
+          loadingIndicator &&
+          loadingIndicator.innerHTML !==
+            '<span style="color: coral;">Failed to load more results.</span>'
+        ) {
+          loadingIndicator.style.display = "none";
+        }
       }
+    };
+
+    const handleSearch = () => {
+      const query = searchInput.value;
+      if (!query.trim()) return;
+      currentQuery = query;
+      fetchResults(true);
     };
 
     searchBtn.addEventListener("click", handleSearch);
     searchInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") handleSearch();
     });
+
+    // Back button logic
+    searchArea.querySelector(".back-button").addEventListener("click", () => {
+      if (observer) observer.disconnect();
+      loadProviders();
+    });
+
+    // Infinite Scroll
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          !isLoading &&
+          hasMore &&
+          currentQuery
+        ) {
+          fetchResults(false);
+        }
+      },
+      { root: null, threshold: 0.1 }
+    );
+
+    const sentinel = document.createElement("div");
+    searchArea.appendChild(sentinel);
+    observer.observe(sentinel);
   }
 
   function renderSearchResults(items, container) {
-    if (!items || items.length === 0) {
-      container.innerHTML = "<p>No results found.</p>";
-      return;
-    }
+    if (!items || items.length === 0) return;
 
-    container.innerHTML = "";
     items.forEach((item) => {
       const card = document.createElement("div");
       card.className = "manga-card";
       card.innerHTML = `
+        <div class="manga-cover">
+          <img src="${item.cover_art || ""}" alt="${
+        item.title
+      }" loading="lazy" onerror="this.style.display='none'">
+        </div>
         <div class="manga-info">
           <h4>${item.title || "Unknown Title"}</h4>
           <div class="meta">
