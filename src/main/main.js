@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const { registerLoaderIPC } = require("./providers/loader");
 
 let mainWindow = null;
 
@@ -18,6 +19,7 @@ function createWindow() {
 }
 
 function main() {
+  registerLoaderIPC();
   mainWindow = createWindow();
 }
 
