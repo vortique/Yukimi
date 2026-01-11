@@ -40,6 +40,16 @@ function registerProviderRegistererIPC() {
       return provider.search(query, offset);
     }
   );
+
+  ipcMain.handle("get-result-informations", async (_, providerName, id) => {
+    const provider = getProvider(providerName);
+
+    if (!provider) {
+      throw new Error(`Provider not found: ${providerName}`);
+    }
+
+    return provider.getResultInformations(id);
+  });
 }
 
 module.exports = { getProviders, getProvider, registerProviderRegistererIPC };

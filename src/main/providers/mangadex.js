@@ -11,6 +11,7 @@ const baseUrl = "https://api.mangadex.org";
 
 const searchUrl = `${baseUrl}/manga`;
 const tagsUrl = `${searchUrl}/tag`;
+const chapterUrl = `${baseUrl}/at-home/server`;
 
 const cachePath = path.join(
   app.getPath("userData"),
@@ -87,17 +88,13 @@ async function getCoverImage(mangaIds, coverArtIds) {
 
     if (!mangaRel) continue;
 
-    coverMap.set(mangaRel.id, cover.attributes.fileName);
+    coverMap.set(
+      mangaRel.id,
+      `${coverArtUrl}/${mangaRel.id}/${cover.attributes.fileName}`
+    );
   }
 
-  const coverUrls = mangaIds.map((id) => {
-    const fileName = coverMap.get(id);
-    if (!fileName) return null;
-
-    return `${coverArtUrl}/${id}/${fileName}`;
-  });
-
-  return coverUrls;
+  return coverMap;
 }
 
 async function search(query, offset = 0, filterByTags = null) {
@@ -161,7 +158,7 @@ async function search(query, offset = 0, filterByTags = null) {
         altTitles: item.attributes.altTitles,
         status: item.attributes.status,
         year: item.attributes.year,
-        cover_art: covers.find((c) => c.includes(item.id)),
+        cover_art: covers.get(item.id),
       };
     });
 
@@ -172,7 +169,73 @@ async function search(query, offset = 0, filterByTags = null) {
   }
 }
 
+async function getResultInformations(id) {
+  try {
+    const resp = await axios.get(`${searchUrl}/${id}`, {
+      headers: {
+        "User-Agent": navigator.userAgent,
+      },
+    });
+
+    const item = resp.data.data;
+
+    const cover = await getCoverImage(
+      [id],
+      [item.relationships.find((i) => i.type === "cover_art").id]
+    );
+
+    const chaptersResp = await axios.get(`${searchUrl}/${id}/feed`, {
+      params: {
+        limit: 500, // Reasonable limit, might need pagination for very long manga
+        translatedLanguage: ["en"],
+        order: { chapter: "desc" },
+      },
+      headers: {
+        "User-Agent": navigator.userAgent,
+      },
+    });
+
+    const chapters = chaptersResp.data.data.map((ch) => ({
+      id: ch.id,
+      chapter: ch.attributes.chapter,
+      title: ch.attributes.title,
+      publishAt: ch.attributes.publishAt,
+    }));
+
+    console.log(chapters);
+
+    return {
+      id: item.id,
+      title: item.attributes.title[Object.keys(item.attributes.title)[0]],
+      altTitles: item.attributes.altTitles,
+      status: item.attributes.status,
+      year: item.attributes.year,
+      description:
+        item.attributes.description.en ||
+        item.attributes.description[
+          Object.keys(item.attributes.description)[0]
+        ],
+      cover_art: cover.get(item.id),
+      chapters: chapters,
+    };
+  } catch (e) {
+    logger.error(`[mangadex.js/getResultInformations] ${e.message}`);
+    return { success: false, message: e.message };
+  }
+}
+
+function getChapter(id) {
+  try {
+    const resp = axios.get();
+    // TODO : Get chapters and download them.
+  } catch (e) {
+    logger.error(`[mangadex.js/getResultInformations] ${e.message}`);
+    return { success: false, message: e.message };
+  }
+}
+
 module.exports = {
   name: "mangadex",
   search: async (query, offset) => await search(query, offset),
+  getResultInformations: async (id) => await getResultInformations(id),
 };

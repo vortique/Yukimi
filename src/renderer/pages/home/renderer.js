@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (result.success) {
           const items = result.content;
           if (items.length > 0) {
-            renderSearchResults(items, resultsContainer);
+            renderSearchResults(items, resultsContainer, providerName);
             offset += 20;
             if (items.length < 20) hasMore = false;
           } else {
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(sentinel);
   }
 
-  function renderSearchResults(items, container) {
+  function renderSearchResults(items, container, providerName) {
     if (!items || items.length === 0) return;
 
     items.forEach((item) => {
@@ -267,7 +267,128 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
       `;
+
+      card.addEventListener("click", () => {
+        showDetails(providerName, item.id);
+      });
+
       container.appendChild(card);
     });
+  }
+
+  async function showDetails(providerName, mangaId) {
+    const sourcesContainer = document.getElementById("sources");
+    const contentArea = document.querySelector(".content");
+    const savedScrollTop = contentArea.scrollTop;
+
+    // Hide current content instead of overwriting
+    const children = Array.from(sourcesContainer.children);
+    children.forEach((child) => (child.style.display = "none"));
+
+    // Create loading element
+    const loadingDiv = document.createElement("div");
+    loadingDiv.className = "loading-container";
+    loadingDiv.style.textAlign = "center";
+    loadingDiv.style.padding = "40px";
+    loadingDiv.innerHTML = "<h3>Loading Details...</h3>";
+    sourcesContainer.appendChild(loadingDiv);
+
+    try {
+      const details = await window.yukimi.getResultInformations(
+        providerName,
+        mangaId
+      );
+
+      sourcesContainer.removeChild(loadingDiv);
+
+      if (!details || details.success === false) {
+        throw new Error(details?.message || "Failed to load details");
+      }
+
+      const altTitles = details.altTitles
+        ? details.altTitles.map((t) => Object.values(t)[0]).join(", ")
+        : "";
+
+      const detailsView = document.createElement("div");
+      detailsView.className = "details-view";
+      detailsView.innerHTML = `
+          <button class="back-button" id="details-back-btn">← Back to Search</button>
+          
+          <div class="details-header">
+            <div class="details-cover">
+              <img src="${details.cover_art}" alt="${
+        details.title
+      }" onerror="this.style.display='none'">
+            </div>
+            <div class="details-info">
+              <h1>${details.title}</h1>
+              ${altTitles ? `<div class="alt-titles">${altTitles}</div>` : ""}
+              
+              <div class="details-meta">
+                <span class="status ${details.status}">${details.status}</span>
+                <span class="year">${details.year || "N/A"}</span>
+              </div>
+              
+              <div class="description">
+                ${details.description || "No description available."}
+              </div>
+            </div>
+          </div>
+
+          <div class="chapter-list-container">
+            <h3>Chapters</h3>
+            <div class="chapter-list">
+              ${
+                details.chapters && details.chapters.length > 0
+                  ? details.chapters
+                      .map(
+                        (chapter) => `
+                  <div class="chapter-item">
+                    <div class="chapter-info">
+                      <span class="chapter-number">Ch. ${
+                        chapter.chapter || "?"
+                      }</span>
+                      <span class="chapter-title">${chapter.title || ""}</span>
+                    </div>
+                    <span class="chapter-date">${new Date(
+                      chapter.publishAt
+                    ).toLocaleDateString()}</span>
+                  </div>
+                `
+                      )
+                      .join("")
+                  : "<p>No chapters found.</p>"
+              }
+            </div>
+          </div>
+      `;
+
+      sourcesContainer.appendChild(detailsView);
+
+      // Scroll to top for details view
+      contentArea.scrollTop = 0;
+
+      detailsView
+        .querySelector("#details-back-btn")
+        .addEventListener("click", () => {
+          sourcesContainer.removeChild(detailsView);
+          children.forEach((child) => (child.style.display = "")); // Restore visibility using empty string to revert to CSS default (e.g. flex or block)
+          // Note: Check if restore needs specific display type. Currently .search-area is flex or block.
+          // Setting '' should revert to stylesheet rule.
+
+          // Restore scroll position
+          contentArea.scrollTop = savedScrollTop;
+        });
+    } catch (error) {
+      console.error("Error loading details:", error);
+      if (sourcesContainer.contains(loadingDiv)) {
+        sourcesContainer.removeChild(loadingDiv);
+      }
+      // Show error but maybe keep hidden content hidden or restore?
+      // Let's restore content and show clean error or alert
+      alert(`Error loading details: ${error.message}`);
+      children.forEach((child) => (child.style.display = ""));
+      contentArea.scrollTop = savedScrollTop;
+    }
   }
 });
